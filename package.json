@@ -1,0 +1,12 @@
+{
+  "name": "dataplatform-pipeline-alerts-email",
+  "description": "",
+  "version": "0.0.1",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-es-logs": "^3.2.0",
+    "serverless-plugin-git-variables": "^3.3.2",
+    "serverless-pseudo-parameters": "^2.5.0",
+    "serverless-python-requirements": "^5.0.0"
+  }
+}

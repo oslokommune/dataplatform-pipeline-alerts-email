@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+flake8 = "*"
+black = "*"
+pytest = "*"
+
+[packages]
+requests = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+test = "python -m pytest"
+lint = "flake8 --ignore E501 email/ test/"
+format-diff = "black --diff --color email/ test/"
+format-check = "black --check email/ test/"
+format = "black email/ test/"
+
+[pipenv]
+allow_prereleases = true
