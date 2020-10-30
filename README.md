@@ -26,4 +26,4 @@ There are various GNU Make commands to make this easier
 ##### Deploy to dev
 `make deploy`  
 ##### Deploy to prod
-`make deploy-prod`  
+`make deploy-prod`

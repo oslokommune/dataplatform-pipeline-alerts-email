@@ -14,6 +14,7 @@ def handle_message(message):
         return False
 
     if check_if_status_is_failed(details):
+        # TODO: Implement sending email
         pass
 
     return True
