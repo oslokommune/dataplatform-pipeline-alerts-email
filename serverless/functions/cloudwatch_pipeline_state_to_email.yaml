@@ -1,4 +1,4 @@
-handler: email.alert_to_email.handler
+handler: pipeline_alerts_email.cloudwatch_pipeline_state_to_email.handler
 environment:
   STAGE: ${self:provider.stage}
 events:

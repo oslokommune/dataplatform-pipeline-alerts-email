@@ -1,6 +1,8 @@
 import json
 
-from email.cloudwatch_pipeline_state_to_email import check_if_status_is_failed
+from pipeline_alerts_email.cloudwatch_pipeline_state_to_email import (
+    check_if_status_is_failed,
+)
 
 message_mock = {
     "region": "eu-west-1",
