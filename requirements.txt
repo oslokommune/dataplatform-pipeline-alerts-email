@@ -4,3 +4,62 @@
 #
 #    pip-compile
 #
+attrs==21.2.0
+    # via jsonschema
+boto3==1.18.13
+    # via dataplatform-pipeline-alerts-email (setup.py)
+botocore==1.21.13
+    # via
+    #   boto3
+    #   s3transfer
+certifi==2021.5.30
+    # via requests
+charset-normalizer==2.0.4
+    # via requests
+ecdsa==0.17.0
+    # via python-jose
+idna==3.2
+    # via requests
+jmespath==0.10.0
+    # via
+    #   boto3
+    #   botocore
+jsonschema==3.2.0
+    # via okdata-sdk
+okdata-sdk==0.9.0
+    # via dataplatform-pipeline-alerts-email (setup.py)
+pyasn1==0.4.8
+    # via
+    #   python-jose
+    #   rsa
+pyjwt==2.1.0
+    # via okdata-sdk
+pyrsistent==0.18.0
+    # via jsonschema
+python-dateutil==2.8.2
+    # via botocore
+python-jose==3.3.0
+    # via python-keycloak
+python-keycloak==0.25.0
+    # via okdata-sdk
+requests==2.26.0
+    # via
+    #   okdata-sdk
+    #   python-keycloak
+rsa==4.7.2
+    # via python-jose
+s3transfer==0.5.0
+    # via boto3
+six==1.16.0
+    # via
+    #   ecdsa
+    #   jsonschema
+    #   python-dateutil
+urllib3==1.26.6
+    # via
+    #   botocore
+    #   okdata-sdk
+    #   requests
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
