@@ -1,12 +1,9 @@
 import json
-import logging
 
+from okdata.aws.logging import log_add, logging_wrapper
 from okdata.sdk.data.dataset import Dataset
 
 from pipeline_alerts_email.mail import send_email
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 
 def has_failed(message):
@@ -29,30 +26,30 @@ def dataset_contact_address(dataset):
 
 
 def handle_message(message):
-    logger.info(f"Handling message: {message}")
+    log_add(sent=False)
 
     detail_type = message.get("detail-type")
     if detail_type != "Step Functions Execution Status Change":
-        logger.info(f"Unexpected message detail-type: {detail_type}, skipping")
+        log_add(skip_reason=f"Unexpected message detail-type: {detail_type}")
         return
 
     source = message.get("source")
     if source != "aws.states":
-        logger.info(f"Unexpected message source: {source}, skipping")
+        log_add(skip_reason=f"Unexpected message source: {source}")
         return
 
     if not has_failed(message):
-        logger.info("Pipeline hasn't failed, skipping")
+        log_add(skip_reason="Pipeline hasn't failed")
         return
 
     dataset = output_dataset(message)
     if not dataset:
-        logger.info("Missing output dataset, skipping")
+        log_add(skip_reason="Missing output dataset")
         return
 
     contact_address = dataset_contact_address(dataset)
     if not contact_address:
-        logger.info("Missing dataset contact address, skipping")
+        log_add(skip_reason="Missing dataset contact address")
         return
 
     errors = "\n".join(pipeline_input(message).get("step_data", {}).get("errors", []))
@@ -64,8 +61,11 @@ def handle_message(message):
     error_message += f"\n\n(denne skulle ha gått til {contact_address})"
     # WIP
 
-    logger.info(f"Messaging '{contact_address}':\n\n{error_message}")
-    send_email(error_message, contact_address)
+    log_add(error_message=error_message)
+    log_add(contact_address=contact_address)
+
+    if send_email(error_message, contact_address):
+        log_add(sent=True)
 
 
 def record_message(record):
@@ -81,6 +81,7 @@ def record_message(record):
     return json.loads(record["Sns"]["Message"])
 
 
+@logging_wrapper
 def handler(event, context):
     for r in event["Records"]:
         handle_message(record_message(r))
