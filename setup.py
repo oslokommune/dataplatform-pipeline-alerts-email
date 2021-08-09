@@ -17,5 +17,5 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/oslokommune/dataplatform-pipeline-alerts-email",
     packages=find_packages(),
-    install_requires=[],
+    install_requires=["boto3", "okdata-aws", "okdata-sdk"],
 )

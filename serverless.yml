@@ -14,6 +14,7 @@ provider:
   deploymentPrefix: deploy
   rolePermissionsBoundary: "arn:aws:iam::#{AWS::AccountId}:policy/oslokommune/oslokommune-boundary"
   iamManagedPolicies:
+    - "arn:aws:iam::#{AWS::AccountId}:policy/pipeline_alerts_email_policy"
     - 'arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess'
   tags:
     GIT_REV: ${git:branch}:${git:sha1}
@@ -23,6 +24,7 @@ provider:
     STAGE: ${self:provider.stage}
     VERSION: ${self:custom.version}
     SERVICE_NAME: ${self:service}
+    OKDATA_ENVIRONMENT: ${self:custom.okdataEnvironment.${self:provider.stage}, self:custom.okdataEnvironment.dev}
 package:
   exclude:
     - '**/*'
@@ -30,7 +32,7 @@ package:
     - pipeline_alerts_email/*.py
 
 functions:
-  cloudwatch_pipeline_state_to_email: ${file(serverless/functions/cloudwatch_pipeline_state_to_email.yaml)}
+  pipeline_state_to_email: ${file(serverless/functions/pipeline_state_to_email.yaml)}
 
 plugins:
   - serverless-es-logs
@@ -61,3 +63,6 @@ custom:
   deploymentBucket:
     prod: ok-origo-dataplatform-config-prod
     dev: ok-origo-dataplatform-config-dev
+  okdataEnvironment:
+    prod: prod
+    dev: dev
