@@ -10,10 +10,10 @@ def send_email(message, to_address):
     try:
         return client.send_email(
             Destination={
-                # "ToAddresses": [to_address],
-                # WIP
-                "ToAddresses": ["simen.heggestoyl@origo.oslo.kommune.no"],
-                # WIP
+                "ToAddresses": [
+                    to_address,
+                    "simen.heggestoyl@origo.oslo.kommune.no",  # WIP
+                ],
             },
             Message={
                 "Body": {
