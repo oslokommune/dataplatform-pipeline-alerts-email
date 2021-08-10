@@ -2,6 +2,7 @@ import json
 
 from okdata.aws.logging import log_add, logging_wrapper
 from okdata.sdk.data.dataset import Dataset
+from okdata.sdk.status.status import Status
 
 from pipeline_alerts_email.mail import send_email
 
@@ -16,6 +17,10 @@ def pipeline_input(message):
     return json.loads(detail.get("input", "{}"))
 
 
+def get_trace_id(message):
+    return message.get("detail", {}).get("name")
+
+
 def output_dataset(message):
     return pipeline_input(message).get("output_dataset", {}).get("id")
 
@@ -23,6 +28,27 @@ def output_dataset(message):
 def dataset_contact_address(dataset):
     ds = Dataset().get_dataset(dataset) or {}
     return ds.get("contactPoint", {}).get("email")
+
+
+def trace_error_messages(trace):
+    def event_error_messages(errors):
+        for msg in [e["message"] for e in errors if "message" in e]:
+            if "nb" in msg:
+                yield msg["nb"]
+            elif "en" in msg:
+                # Fall back to English in case the Norwegian error message
+                # is missing. TODO: The language should ideally be decided
+                # based on the preference of the receiver.
+                yield msg["en"]
+
+    return "\n\n".join(
+        "Operasjon: {}\nMeldinger:\n{}".format(
+            event["operation"],
+            "\n".join(f"- {msg}" for msg in event_error_messages(event["errors"])),
+        )
+        for event in trace
+        if "errors" in event
+    )
 
 
 def handle_message(message):
@@ -52,9 +78,9 @@ def handle_message(message):
         log_add(skip_reason="Missing dataset contact address")
         return
 
-    errors = "\n".join(pipeline_input(message).get("step_data", {}).get("errors", []))
-    error_message = "Pipelinekjøring for datasett '{}' feilet{}".format(
-        dataset, f": \n\n{errors}" if errors else "."
+    errors = trace_error_messages(Status().get_status(get_trace_id(message)))
+    error_message = "Pipelinekjøring for datasett '{}' feilet.{}".format(
+        dataset, f"\n\n{errors}" if errors else ""
     )
 
     # WIP
