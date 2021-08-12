@@ -83,10 +83,6 @@ def handle_message(message):
         dataset, f"\n\n{errors}" if errors else ""
     )
 
-    # WIP
-    error_message += f"\n\n(denne skulle ha gått til {contact_address})"
-    # WIP
-
     log_add(error_message=error_message)
     log_add(contact_address=contact_address)
 
