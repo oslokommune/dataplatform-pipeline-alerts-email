@@ -1,7 +1,7 @@
-from okdata.aws.logging import log_exception
-
 import os
 import requests
+
+from okdata.aws.logging import log_exception
 
 
 def send_email(message, to_address):
@@ -11,7 +11,7 @@ def send_email(message, to_address):
         payload = {
             "mottakerepost": [
                 to_address,
-                # "simen.heggestoyl@origo.oslo.kommune.no",  # WIP
+                "simen.heggestoyl@origo.oslo.kommune.no",  # WIP
                 "jon.morten.kristiansen@origo.oslo.kommune.no",  # WIP
             ],
             "avsenderepost": "dataplattform@oslo.kommune.no",
