@@ -104,3 +104,15 @@ def trace():
             "domain": "dataset",
         },
     ]
+
+
+@pytest.fixture
+def dataset():
+    return {
+        "contactPoint": {
+            "name": "Origo Dataplattform",
+            "email": "dataplattform@oslo.kommune.no",
+        },
+        "Type": "Dataset",
+        "Id": "dataplatform-probe",
+    }
