@@ -17,11 +17,11 @@ def send_email(message, to_address):
             "avsenderepost": "dataplattform@oslo.kommune.no",
             "avsendernavn": "Dataplattform",
             "emne": "Feil ved kjøring av pipeline",
-            "meldingskropp": message,
+            "meldingskropp": message.replace("\n", "<br />"),
         }
         headers = {"apikey": os.environ["EMAIL_API_KEY"]}
         response = requests.post(
-            os.environ["EMAIL_API_URL"], data=payload, headers=headers
+            os.environ["EMAIL_API_URL"], json=payload, headers=headers
         )
         response.raise_for_status()
 
