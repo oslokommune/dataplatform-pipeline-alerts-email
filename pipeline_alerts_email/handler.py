@@ -3,6 +3,7 @@ import json
 from okdata.aws.logging import log_add, logging_wrapper
 from okdata.sdk.data.dataset import Dataset
 from okdata.sdk.status.status import Status
+from requests.exceptions import HTTPError
 
 from pipeline_alerts_email.mail import send_email
 
@@ -78,7 +79,14 @@ def handle_message(message):
         log_add(skip_reason="Missing dataset contact address")
         return
 
-    errors = trace_error_messages(Status().get_status(get_trace_id(message)))
+    try:
+        errors = trace_error_messages(Status().get_status(get_trace_id(message)))
+    except HTTPError:
+        # Don't try too hard getting the status trace. If the status API is
+        # unavaiable or unable to look up the trace ID for some reason, just
+        # don't include the error messages.
+        errors = []
+
     error_message = "Pipelinekjøring for datasett '{}' feilet.{}".format(
         dataset, f"\n\n{errors}" if errors else ""
     )

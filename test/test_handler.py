@@ -1,3 +1,4 @@
+import re
 from unittest.mock import patch
 
 from pipeline_alerts_email.handler import (
@@ -39,17 +40,16 @@ def test_output_dataset(message):
     assert output_dataset(message) == "dataplatform-probe"
 
 
-def test_dataset_contact_address(message):
-    with patch("pipeline_alerts_email.handler.Dataset") as Dataset:
-        Dataset.return_value.get_dataset.return_value = {
-            "contactPoint": {
-                "name": "Origo Dataplattform",
-                "email": "dataplattform@oslo.kommune.no",
-            },
-            "Type": "Dataset",
-            "Id": "dataplatform-probe",
-        }
-        assert dataset_contact_address(message) == "dataplattform@oslo.kommune.no"
+def test_dataset_contact_address(dataset, requests_mock):
+    requests_mock.register_uri(
+        "GET",
+        "https://api.data.oslo.systems/metadata/datasets/dataplatform-probe",
+        json=dataset,
+        status_code=200,
+    )
+    assert (
+        dataset_contact_address("dataplatform-probe") == "dataplattform@oslo.kommune.no"
+    )
 
 
 def test_trace_error_messages(trace):
@@ -69,11 +69,43 @@ def test_handle_message_not_failed(message):
         send_email.assert_not_called()
 
 
-def test_handle_message_failed(message_failed):
-    with patch("pipeline_alerts_email.handler.Status"):
-        with patch("pipeline_alerts_email.handler.send_email") as send_email:
-            handle_message(message_failed)
-            send_email.assert_called_once()
+def test_handle_message_failed(message_failed, trace, dataset, requests_mock):
+    requests_mock.register_uri(
+        "GET",
+        "https://api.data.oslo.systems/metadata/datasets/dataplatform-probe",
+        json=dataset,
+        status_code=200,
+    )
+    requests_mock.register_uri(
+        "GET",
+        re.compile(
+            "https://api.data.oslo.systems/status-api/status/dataplatform-probe-.+"
+        ),
+        json=trace,
+        status_code=200,
+    )
+    with patch("pipeline_alerts_email.handler.send_email") as send_email:
+        handle_message(message_failed)
+        send_email.assert_called_once()
+
+
+def test_handle_message_failed_status_api_error(
+    message_failed, trace, dataset, requests_mock
+):
+    requests_mock.register_uri(
+        "GET",
+        "https://api.data.oslo.systems/metadata/datasets/dataplatform-probe",
+        json=dataset,
+        status_code=200,
+    )
+    requests_mock.register_uri(
+        "GET",
+        re.compile("https://api.data.oslo.systems/status-api/.+"),
+        status_code=400,
+    )
+    with patch("pipeline_alerts_email.handler.send_email") as send_email:
+        handle_message(message_failed)
+        send_email.assert_called_once()
 
 
 def test_handler(event, message):
