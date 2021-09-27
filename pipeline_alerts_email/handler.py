@@ -3,7 +3,7 @@ import json
 from okdata.aws.logging import log_add, logging_wrapper
 from okdata.sdk.data.dataset import Dataset
 from okdata.sdk.status.status import Status
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, RetryError
 
 from pipeline_alerts_email.mail import send_email
 
@@ -81,7 +81,7 @@ def handle_message(message):
 
     try:
         errors = trace_error_messages(Status().get_status(get_trace_id(message)))
-    except HTTPError:
+    except (HTTPError, RetryError):
         # Don't try too hard getting the status trace. If the status API is
         # unavaiable or unable to look up the trace ID for some reason, just
         # don't include the error messages.
