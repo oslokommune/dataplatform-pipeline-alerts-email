@@ -1,4 +1,4 @@
-frameworkVersion: ">=2.10.0 <3.0.0"
+frameworkVersion: ">=3.14.0 <4.0.0"
 
 service: dataplatform-pipeline-alerts-email
 
@@ -12,10 +12,13 @@ provider:
     name: ${self:custom.deploymentBucket.${self:provider.stage}, self:custom.deploymentBucket.dev}
     serverSideEncryption: AES256
   deploymentPrefix: deploy
-  rolePermissionsBoundary: "arn:aws:iam::#{AWS::AccountId}:policy/oslokommune/oslokommune-boundary"
-  iamManagedPolicies:
-    - "arn:aws:iam::#{AWS::AccountId}:policy/pipeline_alerts_email_policy"
-    - 'arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess'
+  logRetentionInDays: 90
+  iam:
+    role:
+      permissionsBoundary: "arn:aws:iam::${aws:accountId}:policy/oslokommune/oslokommune-boundary"
+      managedPolicies:
+      - "arn:aws:iam::${aws:accountId}:policy/pipeline_alerts_email_policy"
+      - 'arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess'
   tags:
     GIT_REV: ${git:branch}:${git:sha1}
     VERSION: ${self:custom.version}
@@ -26,13 +29,13 @@ provider:
     SERVICE_NAME: ${self:service}
     OKDATA_ENVIRONMENT: ${self:custom.okdataEnvironment.${self:provider.stage}, self:custom.okdataEnvironment.dev}
     OKDATA_CLIENT_ID: ${self:service}
-    OKDATA_CLIENT_SECRET: ${ssm:/dataplatform/${self:service}/keycloak-client-secret~true}
-    EMAIL_API_KEY: ${ssm:/dataplatform/shared/email-api-key~true}
+    OKDATA_CLIENT_SECRET: ${ssm:/dataplatform/${self:service}/keycloak-client-secret}
+    EMAIL_API_KEY: ${ssm:/dataplatform/shared/email-api-key}
     EMAIL_API_URL: ${ssm:/dataplatform/shared/email-api-url}
+
 package:
-  exclude:
-    - '**/*'
-  include:
+  patterns:
+    - '!**/*'
     - pipeline_alerts_email/*.py
 
 functions:
@@ -42,7 +45,6 @@ plugins:
   - serverless-es-logs
   - serverless-plugin-git-variables
   - serverless-prune-plugin
-  - serverless-pseudo-parameters
   - serverless-python-requirements
 
 resources:
