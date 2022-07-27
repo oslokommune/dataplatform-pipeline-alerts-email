@@ -2,9 +2,8 @@
   "name": "dataplatform-pipeline-alerts-email",
   "description": "",
   "version": "0.0.1",
-  "dependencies": {},
   "devDependencies": {
-    "serverless": "^3.14.0",
+    "serverless": "^3.21.0",
     "serverless-es-logs": "^3.4.2",
     "serverless-plugin-git-variables": "^5.2.0",
     "serverless-prune-plugin": "^2.0.1",
