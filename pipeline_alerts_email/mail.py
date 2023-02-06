@@ -21,7 +21,6 @@ def send_email(message, to_address):
             ],
             "epostbcc": [
                 "simen.heggestoyl@origo.oslo.kommune.no",  # WIP
-                "jon.morten.kristiansen@origo.oslo.kommune.no",  # WIP
             ],
             "avsenderepost": "dataplattform@oslo.kommune.no",
             "avsendernavn": "Dataplattform",
