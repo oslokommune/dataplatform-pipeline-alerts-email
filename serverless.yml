@@ -42,6 +42,7 @@ functions:
   pipeline_state_to_email: ${file(serverless/functions/pipeline_state_to_email.yaml)}
 
 plugins:
+  - serverless-better-credentials # must be first
   - serverless-plugin-git-variables
   - serverless-prune-plugin
   - serverless-python-requirements
