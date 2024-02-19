@@ -1,7 +1,8 @@
 import os
-import requests
 
+import requests
 from okdata.aws.logging import log_exception
+from okdata.aws.ssm import get_secret
 
 
 def send_email(message, to_address):
@@ -13,21 +14,16 @@ def send_email(message, to_address):
             '<p><strong>Ta kontakt med oss på <a href="https://app.slack.com/client/T6W3G5A4C/C01DE13PLDP">Slack</a> eller dataplattform@oslo.kommune.no dersom du trenger hjelp.</strong></p>'
         )
 
-        # Spec for "EMAIL API" from Team økonomi:
-        # https://developer.oslo.kommune.no/katalog/api/31/introduction
         payload = {
             "mottakerepost": [
                 to_address,
-            ],
-            "epostbcc": [
-                "simen.heggestoyl@origo.oslo.kommune.no",  # WIP
             ],
             "avsenderepost": "dataplattform@oslo.kommune.no",
             "avsendernavn": "Dataplattform",
             "emne": "Feil ved kjøring av pipeline",
             "meldingskropp": email_html_body,
         }
-        headers = {"apikey": os.environ["EMAIL_API_KEY"]}
+        headers = {"apikey": get_secret("/dataplatform/shared/email-api-key")}
         response = requests.post(
             os.environ["EMAIL_API_URL"], json=payload, headers=headers
         )
