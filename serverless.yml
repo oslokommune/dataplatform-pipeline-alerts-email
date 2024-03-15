@@ -29,7 +29,6 @@ provider:
     SERVICE_NAME: ${self:service}
     OKDATA_ENVIRONMENT: ${self:custom.okdataEnvironment.${self:provider.stage}, self:custom.okdataEnvironment.dev}
     OKDATA_CLIENT_ID: ${self:service}
-    OKDATA_CLIENT_SECRET: ${ssm:/dataplatform/${self:service}/keycloak-client-secret}
     EMAIL_API_URL: ${ssm:/dataplatform/shared/email-api-url}
 
 package:
