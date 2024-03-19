@@ -8,11 +8,11 @@ anyio==3.6.1
     # via starlette
 attrs==21.4.0
     # via jsonschema
-boto3==1.24.21
+boto3==1.28.54
     # via
     #   dataplatform-pipeline-alerts-email (setup.py)
     #   okdata-aws
-botocore==1.27.21
+botocore==1.31.85
     # via
     #   boto3
     #   s3transfer
