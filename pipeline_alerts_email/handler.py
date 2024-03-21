@@ -1,11 +1,23 @@
 import json
+from functools import cache
 
 from okdata.aws.logging import log_add, logging_wrapper
+from okdata.aws.ssm import get_secret
+from okdata.sdk.config import Config
 from okdata.sdk.data.dataset import Dataset
 from okdata.sdk.status.status import Status
 from requests.exceptions import HTTPError, RetryError
 
 from pipeline_alerts_email.mail import send_email
+
+
+@cache
+def _sdk_config():
+    sdk_config = Config()
+    sdk_config.config["client_secret"] = get_secret(
+        "/dataplatform/dataplatform-pipeline-alerts-email/keycloak-client-secret"
+    )
+    return sdk_config
 
 
 def has_failed(message):
@@ -27,7 +39,7 @@ def output_dataset(message):
 
 
 def dataset_contact_address(dataset):
-    ds = Dataset().get_dataset(dataset) or {}
+    ds = Dataset(_sdk_config()).get_dataset(dataset) or {}
     return ds.get("contactPoint", {}).get("email")
 
 
@@ -80,7 +92,9 @@ def handle_message(message):
         return
 
     try:
-        errors = trace_error_messages(Status().get_status(get_trace_id(message)))
+        errors = trace_error_messages(
+            Status(_sdk_config()).get_status(get_trace_id(message))
+        )
     except (HTTPError, RetryError):
         # Don't try too hard getting the status trace. If the status API is
         # unavaiable or unable to look up the trace ID for some reason, just
