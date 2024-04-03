@@ -47,9 +47,12 @@ def test_dataset_contact_address(dataset, requests_mock):
         json=dataset,
         status_code=200,
     )
-    assert (
-        dataset_contact_address("dataplatform-probe") == "dataplattform@oslo.kommune.no"
-    )
+    with patch("pipeline_alerts_email.handler.get_secret") as get_secret:
+        get_secret.return_value = "abc123"
+        assert (
+            dataset_contact_address("dataplatform-probe")
+            == "dataplattform@oslo.kommune.no"
+        )
 
 
 def test_trace_error_messages(trace):
@@ -85,7 +88,9 @@ def test_handle_message_failed(message_failed, trace, dataset, requests_mock):
         status_code=200,
     )
     with patch("pipeline_alerts_email.handler.send_email") as send_email:
-        handle_message(message_failed)
+        with patch("pipeline_alerts_email.handler.get_secret") as get_secret:
+            get_secret.return_value = "abc123"
+            handle_message(message_failed)
         send_email.assert_called_once()
 
 
@@ -104,7 +109,9 @@ def test_handle_message_failed_status_api_error(
         status_code=400,
     )
     with patch("pipeline_alerts_email.handler.send_email") as send_email:
-        handle_message(message_failed)
+        with patch("pipeline_alerts_email.handler.get_secret") as get_secret:
+            get_secret.return_value = "abc123"
+            handle_message(message_failed)
         send_email.assert_called_once()
 
 
