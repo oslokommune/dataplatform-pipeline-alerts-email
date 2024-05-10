@@ -4,6 +4,11 @@ service: dataplatform-pipeline-alerts-email
 
 provider:
   name: aws
+  ecr:
+    images:
+      okdata-pipeline-alerts-email:
+        path: ./
+        platform: linux/amd64
   runtime: python3.11
   memorySize: 1024
   region: ${opt:region, 'eu-west-1'}
@@ -31,19 +36,13 @@ provider:
     OKDATA_CLIENT_ID: ${self:service}
     EMAIL_API_URL: ${ssm:/dataplatform/shared/email-api-url}
 
-package:
-  patterns:
-    - '!**/*'
-    - pipeline_alerts_email/*.py
-
 functions:
-  pipeline_state_to_email: ${file(serverless/functions/pipeline_state_to_email.yaml)}
+  pipeline-state-to-email: ${file(serverless/functions/pipeline_state_to_email.yaml)}
 
 plugins:
   - serverless-better-credentials # must be first
   - serverless-plugin-git-variables
   - serverless-prune-plugin
-  - serverless-python-requirements
 
 resources:
   Description: |
@@ -52,10 +51,6 @@ resources:
 
 custom:
   version: 0.1.0
-  pythonRequirements:
-    dockerizePip: non-linux
-    slim: true
-    usePoetry: false
   prune:
     automatic: true
     number: 3
