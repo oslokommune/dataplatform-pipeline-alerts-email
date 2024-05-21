@@ -1,5 +1,6 @@
-handler: pipeline_alerts_email.handler.handler
-environment:
-  STAGE: ${self:provider.stage}
+image:
+  name: okdata-pipeline-alerts-email
+  command:
+    - pipeline_alerts_email.handler.handler
 events:
   - sns: arn:aws:sns:eu-west-1:${aws:accountId}:dataplatform_state_machine_event
