@@ -9,7 +9,6 @@ provider:
       okdata-pipeline-alerts-email:
         path: ./
         platform: linux/amd64
-  runtime: python3.11
   memorySize: 1024
   region: ${opt:region, 'eu-west-1'}
   stage: ${opt:stage, 'dev'}

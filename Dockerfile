@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.11
+FROM public.ecr.aws/lambda/python:3.12
 
 COPY pipeline_alerts_email ${LAMBDA_TASK_ROOT}/pipeline_alerts_email
 
