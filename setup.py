@@ -19,7 +19,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "boto3>=1.28.11",
-        "okdata-aws>=4.1",
-        "okdata-sdk",
+        "okdata-aws>=5",
+        "okdata-sdk>=3.3",
     ],
 )
